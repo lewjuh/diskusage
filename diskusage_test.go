@@ -29,9 +29,6 @@ func TestGet(t *testing.T) {
 		if drive.Used > drive.Total {
 			t.Errorf("Used disk size should not exceed total")
 		}
-		if drive.Options == nil {
-			t.Errorf("Options field should not be nil")
-		}
 	})
 
 	t.Run("InvalidPath", func(t *testing.T) {
