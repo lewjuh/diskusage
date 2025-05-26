@@ -68,17 +68,17 @@ func friendlyLabel(mp, src, fstyp string) string {
 }
 
 // getPlatformDrive returns disk usage info as a Drive for macOS systems.
-func getPlatformDrive(path string) (Drive, error) {
+func getPlatformDrive(path string) (*Drive, error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return Drive{}, err
+		return nil, err
 	}
 	if !info.IsDir() {
-		return Drive{}, os.ErrInvalid
+		return nil, os.ErrInvalid
 	}
 	var stat syscall.Statfs_t
 	if err := syscall.Statfs(path, &stat); err != nil {
-		return Drive{}, err
+		return nil, err
 	}
 	total := stat.Blocks * uint64(stat.Bsize)
 	free := stat.Bfree * uint64(stat.Bsize)
@@ -100,7 +100,7 @@ func getPlatformDrive(path string) (Drive, error) {
 			}
 		}
 	}
-	return Drive{
+	return &Drive{
 		Mount: path,
 		Total: total,
 		Used:  used,
@@ -181,19 +181,4 @@ func ListDrives(opts ...ListOptions) ([]Drive, error) {
 		})
 	}
 	return result, nil
-}
-
-// ListDrivePaths returns a slice of available drive/mount paths on macOS.
-func ListDrivePaths() ([]string, error) {
-	entries, err := os.ReadDir("/Volumes")
-	if err != nil {
-		return nil, err
-	}
-	var paths []string
-	for _, entry := range entries {
-		paths = append(paths, filepath.Join("/Volumes", entry.Name()))
-	}
-	// Always include root
-	paths = append(paths, "/")
-	return paths, nil
 }

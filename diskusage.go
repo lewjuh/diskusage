@@ -82,12 +82,12 @@ func (d *Drive) Humanize(opts ...HumanizeOptions) (string, string, string) {
 
 // Get returns disk usage information for the given path as a Drive.
 // If opts is provided, populates human-readable fields according to options.
-func Get(path string) (Drive, error) {
-	drive, err := getPlatformDrive(path)
+func Get(path string) (*Drive, error) {
+	d, err := getPlatformDrive(path)
 	if err != nil {
-		return drive, err
+		return nil, err
 	}
-	return drive, nil
+	return d, nil
 }
 
 // humanizeBytes returns a human-readable string for a byte count.
@@ -114,24 +114,19 @@ func humanizeBytes(b uint64, decimals int, suffix bool) string {
 
 // DiskUsage defines the interface for disk usage operations.
 type DiskUsage interface {
-	Get(path string) (Drive, error)
+	Get(path string) (*Drive, error)
 	ListDrives() ([]Drive, error)
-	ListDrivePaths() ([]string, error)
 }
 
 // DefaultDiskUsage is the default implementation of DiskUsage.
 type DefaultDiskUsage struct{}
 
-func (DefaultDiskUsage) Get(path string) (Drive, error) {
+func (DefaultDiskUsage) Get(path string) (*Drive, error) {
 	return Get(path)
 }
 
 func (DefaultDiskUsage) ListDrives() ([]Drive, error) {
 	return ListDrives()
-}
-
-func (DefaultDiskUsage) ListDrivePaths() ([]string, error) {
-	return ListDrivePaths()
 }
 
 // New returns the default DiskUsage implementation.
