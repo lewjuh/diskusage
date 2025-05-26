@@ -1,4 +1,4 @@
-package main
+package examples
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	drives, err := diskusage.ListDrives(diskusage.ListOptions{DetectNetworkDrives: true})
+	drives, err := diskusage.ListDrives()
 	if err != nil {
 		log.Fatal(err)
 	}
