@@ -1,46 +1,16 @@
-# GoReleaser configuration file
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=jcroql
+version: 2
 
-project_name: diskusage
-
-dist: dist
-
+before:
+  hooks:
+    - go mod tidy
 builds:
-  - id: diskusage
-    main: .
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
-    ldflags:
-      - -s -w
-    binary: diskusage
-
-archives:
-  - id: default
-    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
-    format: tar.gz
-    files:
-      - README.md
-      - LICENSE
-      - diskusage
-    replacements:
-      windows: win
-      darwin: macos
-
-checksum:
-  name_template: "checksums.txt"
+- skip: true
 
 changelog:
-  sort: desc
+  sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
-
-release:
-  github:
-    owner: lewjuh
-    name: diskusage 
+    - '^docs:'
+    - '^test:'
