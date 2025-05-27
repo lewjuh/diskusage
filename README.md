@@ -21,6 +21,8 @@ go get github.com/lewjuh/diskusage
 | `Get`        |  ✔️   |    ✔️      |   ❌    |
 | `ListDrives` |  ✔️   |    ✔️      |   ❌    |
 
+Windows compatibility coming soon.
+
 ## API
 
 ### Functions
@@ -57,7 +59,7 @@ total, used, free := drive.Humanize()
 fmt.Printf("Label: %s\nMount: %s\nTotal: %s\nUsed: %s\nFree: %s\nType: %s\n", drive.Label, drive.Mount, total, used, free, drive.Type)
 ```
 
-### List all drives (not supported on Windows)
+### List all drives 
 ```go
 import "github.com/lewjuh/diskusage"
 
