@@ -1,3 +1,5 @@
+// Package diskusage provides a simple, cross-platform API for retrieving disk usage statistics.
+// It supports querying total, used, and free space for a given path, as well as listing all drives on supported platforms.
 package diskusage
 
 import (
@@ -9,10 +11,13 @@ import (
 type FormatType int
 
 const (
-	FormatRaw   FormatType = iota // bytes
-	FormatHuman                   // e.g., "10.2 GB"
+	// FormatRaw outputs values in bytes.
+	FormatRaw FormatType = iota // bytes
+	// FormatHuman outputs values in a human-readable format (e.g., "10.2 GB").
+	FormatHuman // e.g., "10.2 GB"
 )
 
+// ListOptions specifies options for listing drives.
 type ListOptions struct {
 	FilterDriveType      DriveType
 	FilterFileSystemType DriveFileSystemType
@@ -23,10 +28,13 @@ type ListOptions struct {
 type DriveType string
 
 const (
+	// DriveTypeInternal represents an internal drive.
 	DriveTypeInternal DriveType = "Internal"
-	DriveTypeNetwork  DriveType = "Network"
+	// DriveTypeNetwork represents a network drive.
+	DriveTypeNetwork DriveType = "Network"
 )
 
+// DriveFileSystemType represents the file system type of a drive.
 type DriveFileSystemType string
 
 const (
@@ -45,14 +53,14 @@ const (
 	DriveFileSystemTypeUnknown DriveFileSystemType = "Unknown"
 )
 
-// Drive represents a physical or logical disk/drive.
+// Drive represents a physical or logical disk/drive and its usage statistics.
 type Drive struct {
-	Label          string // e.g., "Macintosh HD"
-	Mount          string // e.g., "/"
-	Total          uint64
-	Used           uint64
-	Free           uint64
-	Percent        float64
+	Label          string              // e.g., "Macintosh HD"
+	Mount          string              // e.g., "/"
+	Total          uint64              // Total bytes
+	Used           uint64              // Used bytes
+	Free           uint64              // Free bytes
+	Percent        float64             // Used percentage
 	Type           DriveType           // e.g., Internal, External, Network, etc.
 	FileSystemType DriveFileSystemType // e.g., APFS, HFS, NTFS, etc.
 	Options        []string            // e.g., "rw,nosuid,nodev,noexec,relatime"
@@ -60,10 +68,12 @@ type Drive struct {
 
 // HumanizeOptions allows customization of the Humanize operation.
 type HumanizeOptions struct {
-	WithDecimalPlaces int
-	WithSuffix        bool
+	WithDecimalPlaces int  // Number of decimal places to use
+	WithSuffix        bool // Whether to include a unit suffix (e.g., GB)
 }
 
+// Humanize returns human-readable strings for total, used, and free space.
+// You can optionally provide HumanizeOptions to control formatting.
 func (d *Drive) Humanize(opts ...HumanizeOptions) (string, string, string) {
 	decimals := 2
 	suffix := true
@@ -81,7 +91,7 @@ func (d *Drive) Humanize(opts ...HumanizeOptions) (string, string, string) {
 }
 
 // Get returns disk usage information for the given path as a Drive.
-// If opts is provided, populates human-readable fields according to options.
+// If the path is invalid or not a directory, an error is returned.
 func Get(path string) (*Drive, error) {
 	d, err := getPlatformDrive(path)
 	if err != nil {
@@ -114,17 +124,21 @@ func humanizeBytes(b uint64, decimals int, suffix bool) string {
 
 // DiskUsage defines the interface for disk usage operations.
 type DiskUsage interface {
+	// Get returns disk usage information for the given path as a Drive.
 	Get(path string) (*Drive, error)
+	// ListDrives returns a slice of all attached drives.
 	ListDrives() ([]Drive, error)
 }
 
 // DefaultDiskUsage is the default implementation of DiskUsage.
 type DefaultDiskUsage struct{}
 
+// Get returns disk usage information for the given path as a Drive (DefaultDiskUsage implementation).
 func (DefaultDiskUsage) Get(path string) (*Drive, error) {
 	return Get(path)
 }
 
+// ListDrives returns a slice of all attached drives (DefaultDiskUsage implementation).
 func (DefaultDiskUsage) ListDrives() ([]Drive, error) {
 	return ListDrives()
 }
