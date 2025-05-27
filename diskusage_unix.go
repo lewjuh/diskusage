@@ -87,9 +87,10 @@ func ListDrives(opts ...ListOptions) ([]Drive, error) {
 		}
 
 		fsType := ParseDriveFileSystemType(fstyp)
+		isNet := fstyp == "nfs" || fstyp == "smbfs" || fstyp == "cifs" || fstyp == "webdav" || fstyp == "afpfs"
 
 		dType := DriveTypeInternal
-		if fsType == DriveFileSystemTypeNFS || fsType == DriveFileSystemTypeSMBFS {
+		if isNet {
 			dType = DriveTypeNetwork
 		}
 

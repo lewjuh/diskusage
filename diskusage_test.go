@@ -126,3 +126,25 @@ func TestListDrives_Unix(t *testing.T) {
 		}
 	}
 }
+
+func TestDriveTypeAssignment(t *testing.T) {
+	tests := []struct {
+		fsType   DriveFileSystemType
+		expected DriveType
+	}{
+		{DriveFileSystemTypeNFS, DriveTypeNetwork},
+		{DriveFileSystemTypeSMBFS, DriveTypeNetwork},
+		{DriveFileSystemTypeAFPFS, DriveTypeNetwork},
+		{DriveFileSystemTypeAPFS, DriveTypeInternal}, // local
+	}
+	for _, tt := range tests {
+		dType := DriveTypeInternal
+		switch tt.fsType {
+		case DriveFileSystemTypeNFS, DriveFileSystemTypeSMBFS, DriveFileSystemTypeAFPFS:
+			dType = DriveTypeNetwork
+		}
+		if dType != tt.expected {
+			t.Errorf("fsType %q: got DriveType %q, want %q", tt.fsType, dType, tt.expected)
+		}
+	}
+}

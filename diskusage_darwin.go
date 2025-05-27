@@ -84,7 +84,7 @@ func getPlatformDrive(path string) (*Drive, error) {
 	free := stat.Bfree * uint64(stat.Bsize)
 	used := total - free
 	label := filepath.Base(path)
-	var dtype DriveType = DriveTypeInternal
+	var dtype DriveType = DriveTypeNetwork
 
 	out, err := exec.Command("diskutil", "info", "-plist", path).Output()
 	if err == nil {
@@ -167,11 +167,15 @@ func ListDrives(opts ...ListOptions) ([]Drive, error) {
 		label := friendlyLabel(mp, src, fstyp)
 		flags := humanFlags(uint64(fs.Flags))
 		percent := float64(used) / float64(total) * 100
+		dtype := DriveTypeInternal
+		if isNet {
+			dtype = DriveTypeNetwork
+		}
 
 		result = append(result, Drive{
 			Mount:          mp,
 			Label:          label,
-			Type:           DriveTypeInternal,
+			Type:           dtype,
 			FileSystemType: ParseDriveFileSystemType(fstyp),
 			Total:          total,
 			Used:           used,
